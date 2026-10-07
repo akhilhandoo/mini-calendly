@@ -5,7 +5,7 @@ An API-first meeting scheduling service. Users publish **time slots** in their p
 view**. They can also look for time when several users are all free.
 
 Tech stack: Java 24, Spring Boot 4.1, Spring Data JPA (Hibernate 7), PostgreSQL 17, Flyway, springdoc-openapi,
-Micrometer/Prometheus, JUnit 5 + Testcontainers.
+Micrometer/Prometheus, JUnit 5 + Testcontainers, Gradle (Kotlin DSL).
 
 ---
 
@@ -242,13 +242,13 @@ Example PromQL: `rate(calendar_meetings_scheduled_total[5m])`, or
 
 ```bash
 docker compose up -d postgres     # or any PostgreSQL 14+ with the btree_gist extension available
-./mvnw spring-boot:run            # needs JDK 24
+./gradlew bootRun                 # needs JDK 24 or newer
 ```
 
 ## Tests
 
 ```bash
-./mvnw test
+./gradlew test
 ```
 
 * `AvailabilityAggregatorTest`: unit tests for merging, clipping and intersecting intervals.

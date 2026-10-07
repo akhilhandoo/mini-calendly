@@ -1,16 +1,17 @@
 # ---- build stage ----
-FROM maven:3.9-eclipse-temurin-24 AS build
+FROM eclipse-temurin:24-jdk AS build
 WORKDIR /workspace
-COPY pom.xml .
-RUN mvn -B -q dependency:go-offline
+COPY gradlew settings.gradle.kts build.gradle.kts ./
+COPY gradle ./gradle
+RUN ./gradlew --no-daemon -q dependencies
 COPY src ./src
-RUN mvn -B -q package -DskipTests
+RUN ./gradlew --no-daemon -q bootJar
 
 # ---- runtime stage ----
 FROM eclipse-temurin:24-jre
 RUN groupadd --system app && useradd --system --gid app app
 WORKDIR /app
-COPY --from=build /workspace/target/mini-calendly.jar app.jar
+COPY --from=build /workspace/build/libs/mini-calendly.jar app.jar
 USER app
 EXPOSE 8080
 ENV JAVA_OPTS="-XX:MaxRAMPercentage=75"
