@@ -41,6 +41,10 @@ calendar:
   query:
     max-range: 93d
     max-users-for-common-availability: 20
+  # Loads src/main/resources/seed/seed-data.json when the database has no users yet.
+  # Disable with CALENDAR_SEED_ENABLED=false.
+  seed:
+    enabled: true
 
 management:
   endpoints:

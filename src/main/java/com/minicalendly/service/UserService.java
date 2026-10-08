@@ -56,7 +56,7 @@ public class UserService {
         return calendars.findAll(pageable).map(Mappers::toResponse);
     }
 
-    static String normalizeEmail(String email) {
+    public static String normalizeEmail(String email) {
         return email.strip().toLowerCase(Locale.ROOT);
     }
 

@@ -25,8 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Base class for API tests: full Spring context against a real PostgreSQL (Testcontainers).
  * The container is shared by all test classes; tables are truncated after every test.
+ * Demo seed data is disabled so that every test starts from an empty database.
  */
-@SpringBootTest
+@SpringBootTest(properties = "calendar.seed.enabled=false")
 @AutoConfigureMockMvc
 abstract class IntegrationTest {
 
