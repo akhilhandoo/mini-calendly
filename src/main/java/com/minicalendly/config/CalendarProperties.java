@@ -9,7 +9,7 @@ import java.time.Duration;
  * Tunable business limits, bound from the {@code calendar.*} configuration namespace.
  */
 @ConfigurationProperties("calendar")
-public record CalendarProperties(@DefaultValue Slots slots, @DefaultValue Query query) {
+public record CalendarProperties(@DefaultValue Slots slots, @DefaultValue Query query, @DefaultValue Seed seed) {
 
     public record Slots(
             @DefaultValue("5m") Duration minDuration,
@@ -21,5 +21,11 @@ public record CalendarProperties(@DefaultValue Slots slots, @DefaultValue Query 
     public record Query(
             @DefaultValue("93d") Duration maxRange,
             @DefaultValue("20") int maxUsersForCommonAvailability) {
+    }
+
+    /** Demo data inserted on startup into an empty database (see {@code SeedDataLoader}). */
+    public record Seed(
+            @DefaultValue("false") boolean enabled,
+            @DefaultValue("classpath:seed/seed-data.json") String location) {
     }
 }

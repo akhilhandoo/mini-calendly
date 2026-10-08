@@ -219,8 +219,41 @@ src/main/resources/db/migration   Flyway migrations
 | `calendar.slots.allow-past`                          | `false`                                      |
 | `calendar.query.max-range`                           | `93d`                                        |
 | `calendar.query.max-users-for-common-availability`   | `20`                                         |
+| `calendar.seed.enabled` (`CALENDAR_SEED_ENABLED`)    | `true`                                       |
 
 Any property can be overridden with an environment variable, e.g. `CALENDAR_SLOTS_MAX_BATCH_SIZE=1000`.
+
+## Demo data
+
+On startup, `SeedDataLoader` fills an **empty** database from `src/main/resources/seed/seed-data.json`. If any
+user already exists, it does nothing, so restarts never duplicate data. Turn it off with
+`CALENDAR_SEED_ENABLED=false`. To reload from scratch, run `docker compose down -v && docker compose up -d`.
+
+The data set has 100 users, about 14,500 slots and about 7,300 meetings. The slots run from 4 weeks back to
+8 weeks ahead. Times in the file are relative: a day offset from this week's Monday plus a local time in the
+user's time zone. The calendars therefore always look current, and working hours stay in local time.
+Regenerate the file with `python3 scripts/generate_seed_data.py` (output is deterministic).
+
+Users in 12 teams across many time zones have different working styles. Some are packed, some
+book consultant-style hourly slots, some work flexible hours and some are light users. A few have no slots.
+The named users below cover specific scenarios (all `@acme.example.com`):
+
+| User                                  | Scenario                                                                 |
+|---------------------------------------|--------------------------------------------------------------------------|
+| `ada.lovelace` (Berlin)               | Back-to-back 30-min slots 09-17, all busy: merges into one busy interval |
+| `grace.hopper` (New York)             | Only free slots, no meetings                                             |
+| `alan.turing`                         | Registered without a time zone (defaults to UTC), no slots               |
+| `edsger.dijkstra` (Amsterdam)         | Edge cases: 5-min and 8-h slots, FREE→BUSY→FREE touching, slot ending at midnight |
+| `barbara.liskov` (Los Angeles)        | Owner-blocked `BUSY` time (focus, lunch) without meetings                |
+| `linus.torvalds` (Helsinki)           | No slots of his own, but a participant in many meetings                  |
+| `margaret.hamilton` (Chicago)         | Large meetings: registered and external participants, unnamed participants, duplicate e-mail in different case |
+| `srinivasa.ramanujan`, `pemba.sherpa` | Half- and quarter-hour UTC offsets (Kolkata, Kathmandu)                  |
+| `klaus.becker`, `zoe.mueller`, `lea.dubois` | Common availability: Tuesdays 14:30-15:30 overlap, Thursdays only touch (no common time) |
+| `kenji.watanabe` (Tokyo)              | Evening and weekend slots                                                |
+| `nora.newcomer`                       | Registered today, nothing scheduled                                      |
+
+Meetings also cover past and future dates, missing descriptions, no participants, external-only guests and
+edited details (`updatedAt` > `createdAt`). `SeedDataApiTest` loads the file and checks these scenarios.
 
 ## Metrics
 
